@@ -1,0 +1,9 @@
+*.pdf
+!report/report.pdf
+*.pt
+runs/
+__pycache__/
+*.pyc
+report/*.md
+report/*.html
+report/build.py

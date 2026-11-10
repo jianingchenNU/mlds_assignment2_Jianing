@@ -1,0 +1,5 @@
+gymnasium>=1.0
+ale-py>=0.10
+numpy
+matplotlib
+pandas

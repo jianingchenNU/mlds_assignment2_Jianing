@@ -1,0 +1,270 @@
+{
+  "T1": {
+    "what": "CartPole gamma sweep: mean max Q over the last 50 episodes of each run (2 seeds), plus final MA100 reward and max episode length per seed",
+    "expected": {
+      "q": "within 10% of 1/(1-gamma) = 5, 10, 20 (pass criterion)",
+      "horizon": "Q gap between never failing and failing after 20 steps = gamma^20/(1-gamma) = 0.0576 (0.8), 1.22 (0.9), 7.17 (0.95). Max episode length: gamma=0.8 never reaches 500, gamma>=0.9 does (pass criterion, every seed)"
+    },
+    "measured": {
+      "0.8": {
+        "q": 4.88,
+        "bound": 5.0,
+        "rel_err": -0.0239,
+        "q_pass": true,
+        "gap_fail_at_20": 0.058,
+        "ma100_final": [
+          135.0,
+          140.3
+        ],
+        "max_len": [
+          383,
+          329
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "max_len_pass": true
+      },
+      "0.9": {
+        "q": 9.661,
+        "bound": 10.0,
+        "rel_err": -0.0339,
+        "q_pass": true,
+        "gap_fail_at_20": 1.216,
+        "ma100_final": [
+          124.8,
+          128.8
+        ],
+        "max_len": [
+          500,
+          500
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "max_len_pass": true
+      },
+      "0.95": {
+        "q": 18.097,
+        "bound": 20.0,
+        "rel_err": -0.0952,
+        "q_pass": true,
+        "gap_fail_at_20": 7.17,
+        "ma100_final": [
+          156.9,
+          150.5
+        ],
+        "max_len": [
+          500,
+          500
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "max_len_pass": true
+      }
+    },
+    "pass": true
+  },
+  "T2": {
+    "what": "DQN on a 10-state deterministic chain vs exact Q* from value iteration (gamma 0.95)",
+    "expected": "max |Q - Q*| < 0.05; zero-reward control max |Q| ~ 0 (< 0.05)",
+    "measured": {
+      "max_abs_err": 0.00648,
+      "zero_reward_max_abs_q": 0.00051,
+      "greedy_is_right_everywhere": true,
+      "steps": 20000
+    },
+    "pass": true
+  },
+  "T5": {
+    "what": "Predicted max Q vs realized discounted return on eval episodes (positive bias = overestimation)",
+    "expected": "bias near 0 (|bias| < 10% of mean G)",
+    "measured": {
+      "cartpole": {
+        "n_steps": 8820,
+        "episodes": 20,
+        "mean_q": 19.663,
+        "mean_G": 19.958,
+        "bias": -0.295,
+        "rel_bias": -0.0148,
+        "pearson_r": 0.0556
+      },
+      "pacman": {
+        "n_steps": 20188,
+        "episodes": 20,
+        "mean_q": 11.168,
+        "mean_G": 10.452,
+        "bias": 0.717,
+        "rel_bias": 0.0686,
+        "pearson_r": 0.6942
+      }
+    },
+    "pass": true
+  },
+  "T6": {
+    "what": "CartPole first 10 updates after warmup: hand-checkable targets, and determinism with a fixed seed",
+    "expected": "targets recompute exactly; two runs with the same seed identical",
+    "measured": {
+      "max_target_recompute_err": 2.1606683775488023e-08,
+      "max_err_from_printed": 7e-05,
+      "trace_identical": true,
+      "greedy_rollout_identical": true,
+      "greedy_rollout_steps": 96
+    },
+    "pass": true
+  },
+  "T3": {
+    "what": "CartPole with time limit 50: bootstrap through truncation vs truncation as terminal (negative control: non-Markov target, expected unstable)",
+    "expected": {
+      "bootstrap": "q_last50 within 10% of 1/(1-gamma) = 20 (pass criterion)",
+      "terminal": "negative control, no target value; expected unstable Q, loss and reward",
+      "max_true_return_50_step_cap": 18.461
+    },
+    "measured": {
+      "bootstrap": {
+        "q_last50": 20.303,
+        "q_ma100_max": 20.352,
+        "loss_last500": 0.01936,
+        "reward_ma100_min_after_ep300": 41.4,
+        "frac_last50_reaching_cap": 0.88,
+        "rel_err": 0.0152
+      },
+      "terminal": {
+        "q_last50": 23.579,
+        "q_ma100_max": 25.652,
+        "loss_last500": 0.3557,
+        "reward_ma100_min_after_ep300": 10.92,
+        "frac_last50_reaching_cap": 1.0
+      },
+      "gap_bootstrap_minus_terminal": -3.276
+    },
+    "pass": true
+  },
+  "T7": {
+    "what": "Pac-Man edge cases: episode-boundary frame stacks, life-loss vs game-over terminals, reward clipping, random-policy baseline",
+    "expected": "0 cross-episode stacks after masking; trained eval mean > random mean",
+    "measured": {
+      "env_steps": 14990,
+      "episodes": 30,
+      "stacks_sampled": 159872,
+      "stacks_crossing_episode_without_mask": 844,
+      "stacks_crossing_episode_after_mask": 0,
+      "life_loss_terminals": 60,
+      "game_over_terminals": 30,
+      "truncations": 0,
+      "raw_reward_counts": {
+        "0.0": 14261,
+        "10.0": 726,
+        "50.0": 1,
+        "200.0": 1,
+        "400.0": 1
+      },
+      "clipped_reward_counts": {
+        "0.0": 14261,
+        "1.0": 729
+      },
+      "random_policy_mean": 260.1,
+      "random_policy_std": 118.3,
+      "random_policy_n": 100,
+      "trained_eval_mean": 1930.26
+    },
+    "pass": true
+  },
+  "T4": {
+    "what": "CartPole ablation, 3 seeds x {full DQN, no target net, no replay}: best greedy check, final MA100 and peak mean_maxq per seed and mean over seeds",
+    "expected": "no_target diverges (mean peak mean_maxq > 1/(1-gamma) = 20); full > no_replay > no_target for both the mean best greedy check and the mean final MA100",
+    "measured": {
+      "full": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "best_check": 482.0,
+            "final_ma100": 156.9,
+            "peak_maxq": 20.021
+          },
+          {
+            "seed": 1,
+            "best_check": 359.8,
+            "final_ma100": 150.5,
+            "peak_maxq": 19.923
+          },
+          {
+            "seed": 2,
+            "best_check": 500.0,
+            "final_ma100": 242.1,
+            "peak_maxq": 20.664
+          }
+        ],
+        "mean": {
+          "best_check": 447.267,
+          "final_ma100": 183.167,
+          "peak_maxq": 20.203
+        }
+      },
+      "no_target": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "best_check": 90.8,
+            "final_ma100": 11.2,
+            "peak_maxq": 1103169.816
+          },
+          {
+            "seed": 1,
+            "best_check": 9.3,
+            "final_ma100": 11.6,
+            "peak_maxq": 980831.066
+          },
+          {
+            "seed": 2,
+            "best_check": 9.3,
+            "final_ma100": 11.2,
+            "peak_maxq": 1074826.861
+          }
+        ],
+        "mean": {
+          "best_check": 36.467,
+          "final_ma100": 11.333,
+          "peak_maxq": 1052942.581
+        }
+      },
+      "no_replay": {
+        "per_seed": [
+          {
+            "seed": 0,
+            "best_check": 439.2,
+            "final_ma100": 76.2,
+            "peak_maxq": 19.319
+          },
+          {
+            "seed": 1,
+            "best_check": 283.2,
+            "final_ma100": 131.5,
+            "peak_maxq": 18.704
+          },
+          {
+            "seed": 2,
+            "best_check": 323.6,
+            "final_ma100": 123.5,
+            "peak_maxq": 19.34
+          }
+        ],
+        "mean": {
+          "best_check": 348.667,
+          "final_ma100": 110.4,
+          "peak_maxq": 19.121
+        }
+      },
+      "checks": {
+        "no_target_peak_maxq_gt_20": true,
+        "order_best_check": true,
+        "order_final_ma100": true
+      }
+    },
+    "pass": true
+  }
+}
