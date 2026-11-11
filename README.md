@@ -49,7 +49,7 @@ Every hyperparameter is a flag (`python train.py --env pacman --help`). Each run
 
 ## Validation
 
-Each script prints one result line, saves a figure to `results/` and records the result in `results/summary.json`.
+Each script prints one result line, saves a figure or table to `results/` and records the result in `results/summary.json`.
 Run evaluation first (T5 and T7 read the eval files). `--quick` runs a few-second pipeline check.
 
 | test | what it checks | command |
